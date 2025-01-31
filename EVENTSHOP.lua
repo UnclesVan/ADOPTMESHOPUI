@@ -173,8 +173,8 @@ for category, items in pairs(shopCategories) do
 
                 -- Call the purchase
                 print("Attempting to buy " .. buyCount .. " of " .. item.name) -- Debug message
-                game:GetService("ReplicatedStorage").API.BuyItem:InvokeServer(unpack(args))
-
+                game:GetService("ReplicatedStorage").API:FindFirstChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
+                --https://www.jammable.com/conversion/custom-caseoh-ai-_EIZYd6o
                 -- Clear the textbox after purchasing
                 textbox.Text = ""
                 item.stock = item.stock - buyCount -- Deduct the stock
