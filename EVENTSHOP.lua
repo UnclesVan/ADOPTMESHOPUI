@@ -38,10 +38,17 @@ end)
 
 -- Set up items
 local items = {
-    {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0}, -- Changed stock to 0
-    {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-    {name = "cracked_egg", maxAmount = 1, stock = 0},
-    {name = "royal_egg", maxAmount = 1, stock = 1}
+
+
+    {name = "lunar_2025_blossom_snake", maxAmount = 10, stock = 15},
+    {name = "tiny_pet_age_potion", maxAmount = 10, stock = 15},
+
+    
+    
+   -- {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0}, -- Changed stock to 0
+   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+  --  {name = "cracked_egg", maxAmount = 1, stock = 0},
+   -- {name = "royal_egg", maxAmount = 1, stock = 1}
 }
 
 -- Create a frame for items below the close button
