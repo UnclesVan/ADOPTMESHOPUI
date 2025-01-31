@@ -42,8 +42,8 @@ local items = {
    
   
     {name = "royal_egg", maxAmount = 1, stock = 1}
-    {name = "cracked_egg", maxAmount = 1, stock = 0}
-    {name = "garden_2024_egg", maxAmount = 10, stock = 15}
+    {name = "cracked_egg", maxAmount = 1, stock = 0},
+    {name = "garden_2024_egg", maxAmount = 10, stock = 15},
 
 
     --OUT OF STOCK SECTION
