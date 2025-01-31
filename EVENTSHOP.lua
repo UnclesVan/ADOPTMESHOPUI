@@ -39,10 +39,10 @@ end)
 -- Set up items
 local shopCategories = {
     ["Pets"] = {
-       {name = "lunar_2025_blossom_snake", maxAmount = 10, stock = 15},
-       {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-       {name = "royal_egg", maxAmount = 10, stock = 15},
-       {name = "cracked_egg", maxAmount = 10, stock = 15}, 
+       {name = "lunar_2025_blossom_snake cost: ★40 STARS LEAVING IN 12 HOURS!", maxAmount = 10, stock = 15},
+       {name = "garden_2024_egg cost: 750$ BUCKS LEAVING SOON IN 1 DAY!", maxAmount = 10, stock = 15},
+       {name = "royal_egg cost: $1450 BUCKS", maxAmount = 10, stock = 15},
+       {name = "cracked_egg cost: $350 BUCKS", maxAmount = 10, stock = 15}, 
         
        -- {name = "cracked_egg", maxAmount = 1, stock = 0},
        -- {name = "royal_egg", maxAmount = 1, stock = 1}
