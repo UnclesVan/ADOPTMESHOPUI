@@ -36,6 +36,7 @@ closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy() -- This will destroy the GUI
 end)
 
+-- Set up items
 local items = {
     {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0}, -- Changed stock to 0
     {name = "garden_2024_egg", maxAmount = 10, stock = 15},
@@ -75,7 +76,7 @@ local function createItemUI(item, index)
     -- Create a Frame for availability sign
     local availableFrame = Instance.new("Frame")
     availableFrame.Size = UDim2.new(0.2, 0, 1, 0)
-    availableFrame.Position = UDim2.new(0.80, 0, 0, 0) -- Right aligned
+    availableFrame.Position = UDim2.new(0.8, 0, 0, 0) -- Right aligned
     availableFrame.BackgroundTransparency = 1
     availableFrame.Parent = itemFrame
 
