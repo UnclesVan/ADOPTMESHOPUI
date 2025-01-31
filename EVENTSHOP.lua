@@ -53,11 +53,11 @@ local items = {
 
     
     -- AVAILABLE SECTION
-    {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-    {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0},
-    {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-    {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-    {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+  --  {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0},
+   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
     
 }
 
