@@ -42,7 +42,7 @@ local items = {
    
   
     {name = "royal_egg", maxAmount = 1, stock = 1}
-    {name = "cracked_egg", maxAmount = 1, stock = 0},
+    {name = "cracked_egg", maxAmount = 0, stock = 0},
 
 
 
