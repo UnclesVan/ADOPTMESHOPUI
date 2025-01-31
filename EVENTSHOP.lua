@@ -36,29 +36,11 @@ closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy() -- This will destroy the GUI
 end)
 
--- Set up items
 local items = {
-     -- Changed stock to 0
-   
-  
-    {name = "royal_egg", maxAmount = 1, stock = 1}
-    {name = "cracked_egg", maxAmount = 1, stock = 0},
+    {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0}, -- Changed stock to 0
     {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-
-
-    --OUT OF STOCK SECTION
-   -- {name = "cracked_egg", maxAmount = 1, stock = 0},
-   -- {name = "cracked_egg", maxAmount = 1, stock = 0},
-   -- {name = "cracked_egg", maxAmount = 1, stock = 0},
-
-    
-    -- AVAILABLE SECTION
-   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-  --  {name = "lunar_2025_blossom_snake", maxAmount = 5, stock = 0},
-   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-   -- {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-    
+    {name = "cracked_egg", maxAmount = 1, stock = 0},
+    {name = "royal_egg", maxAmount = 1, stock = 1}
 }
 
 -- Create a frame for items below the close button
