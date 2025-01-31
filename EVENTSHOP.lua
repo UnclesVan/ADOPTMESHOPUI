@@ -43,9 +43,6 @@ local items = {
     {name = "cracked_egg", maxAmount = 1, stock = 0},
     {name = "royal_egg", maxAmount = 1, stock = 1}
     {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-    {name = "new", maxAmount = 10, stock = 15},
-    {name = "test", maxAmount = 10, stock = 15},
-    {name = "lol", maxAmount = 10, stock = 15},
 }
 
 -- Create a frame for items below the close button
