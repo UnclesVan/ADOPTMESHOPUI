@@ -47,9 +47,9 @@ local items = {
 
 
     --OUT OF STOCK SECTION
-    {name = "cracked_egg", maxAmount = 1, stock = 0},
-    {name = "cracked_egg", maxAmount = 1, stock = 0},
-    {name = "cracked_egg", maxAmount = 1, stock = 0},
+   -- {name = "cracked_egg", maxAmount = 1, stock = 0},
+   -- {name = "cracked_egg", maxAmount = 1, stock = 0},
+   -- {name = "cracked_egg", maxAmount = 1, stock = 0},
 
     
     -- AVAILABLE SECTION
