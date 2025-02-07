@@ -41,7 +41,7 @@ local shopCategories = {
     ["Pets"] = {
         {name = "lunar_2025_gilded_snake", maxAmount = 10, stock = 15},
         {name = "lunar_2025_prism_snake", maxAmount = 10, stock = 15},
-        {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+        {name = "garden_2024_egg", maxAmount = 10, stock = 0},
         {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
         {name = "moon_royal_egg", maxAmount = 10, stock = 15}, -- New moon royal egg
         {name = "cracked_egg", maxAmount = 10, stock = 15}, 
