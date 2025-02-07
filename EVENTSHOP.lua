@@ -39,13 +39,12 @@ end)
 -- Set up items
 local shopCategories = {
     ["Pets"] = {
-       {name = "lunar_2025_blossom_snake", maxAmount = 10, stock = 15},
-       {name = "garden_2024_egg", maxAmount = 10, stock = 15},
-       {name = "royal_egg", maxAmount = 10, stock = 15},
-       {name = "cracked_egg", maxAmount = 10, stock = 15}, 
-        
-       -- {name = "cracked_egg", maxAmount = 1, stock = 0},
-       -- {name = "royal_egg", maxAmount = 1, stock = 1}
+        {name = "lunar_2025_gilded_snake", maxAmount = 10, stock = 15},
+        {name = "lunar_2025_prism_snake", maxAmount = 10, stock = 15},
+        {name = "garden_2024_egg", maxAmount = 10, stock = 15},
+        {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
+        {name = "moon_royal_egg", maxAmount = 10, stock = 15}, -- New moon royal egg
+        {name = "cracked_egg", maxAmount = 10, stock = 15}, 
     },
     ["Food"] = {
         {name = "tiny_pet_age_potion", maxAmount = 5, stock = 20},
@@ -163,22 +162,37 @@ for category, items in pairs(shopCategories) do
         buyButton.MouseButton1Click:Connect(function()
             local buyCount = tonumber(textbox.Text) or 0
             if buyCount > 0 and buyCount <= item.maxAmount and item.stock >= buyCount then
-                local args = {
-                    [1] = category:lower():gsub(" ", "_"),
-                    [2] = item.name,
-                    [3] = {
-                        ["buy_count"] = buyCount
+                if item.name == "royal_egg" then
+                    -- Logic for purchasing the royal egg
+                    local args = {
+                        [1] = category:lower():gsub(" ", "_"),
+                        [2] = item.name,
+                        [3] = {
+                            ["buy_count"] = buyCount
+                        }
                     }
-                }
+                    
+                    -- Call the purchase for the royal egg
+                    print("Attempting to buy " .. buyCount .. " of " .. item.name) -- Debug message
+                    game:GetService("ReplicatedStorage").API:FindFirstChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
+                    textbox.Text = ""
+                    item.stock = item.stock - buyCount -- Deduct the stock
+                    availableSign.Text = item.stock <= 0 and "OUT OF STOCK" or "AVAILABLE" -- Update availability
 
-                -- Call the purchase
-                print("Attempting to buy " .. buyCount .. " of " .. item.name) -- Debug message
-                game:GetService("ReplicatedStorage").API:FindFirstChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
-                --https://www.jammable.com/conversion/custom-caseoh-ai-_EIZYd6o
-                -- Clear the textbox after purchasing
-                textbox.Text = ""
-                item.stock = item.stock - buyCount -- Deduct the stock
-                availableSign.Text = item.stock <= 0 and "OUT OF STOCK" or "AVAILABLE" -- Update availability
+                elseif item.name == "moon_royal_egg" then
+                    -- Logic for claiming the moon royal egg
+                    local args = {
+                        "MoonInterior"  -- This represents the argument to claim the moon royal egg
+                    }
+                    
+                    -- Fire the server with the MoonAPI to claim moon royal egg
+                    game:GetService("ReplicatedStorage").API:FindFirstChild("MoonAPI/ClaimRoyalEgg"):FireServer(unpack(args))
+                    print("Claimed the moon royal egg!") -- Debug message
+
+                    textbox.Text = "" -- Clear the textbox after claiming
+                    item.stock = item.stock - buyCount -- Deduct the stock
+                    availableSign.Text = item.stock <= 0 and "OUT OF STOCK" or "AVAILABLE" -- Update availability
+                end
             else
                 print("Invalid amount! Please enter a valid number.") -- Debug message
             end
