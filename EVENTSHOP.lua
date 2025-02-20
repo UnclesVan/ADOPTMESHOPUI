@@ -1,231 +1,177 @@
--- LocalScript placed in StarterPlayerScripts or StarterGui
+-- Create the Fluent UI if it doesn't exist
+local ValentinesEvent, ValentinesEventTeleport, TeleportSpeed -- Placeholders
 
-local player = game.Players.LocalPlayer
+-- Check if the Fluent UI is already loaded
+if _G.FluentLoaded then  -- Use a global flag
+    local Fluent = _G.Fluent
+    local SaveManager = _G.SaveManager
+    local InterfaceManager = _G.InterfaceManager
+    local Window = _G.FluentWindow
+else
+    -- Fluent UI doesn't exist, load everything
+    local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+    local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+    local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+    _G.Fluent = Fluent
+    _G.SaveManager = SaveManager
+    _G.InterfaceManager = InterfaceManager
+    
+    -- Create Main UI Window
+    local Window = Fluent:CreateWindow({
+        Title = "Fluent " .. Fluent.Version,
+        SubTitle = "by dawid",
+        TabWidth = 160,
+        Size = UDim2.fromOffset(580, 460),
+        Acrylic = true,
+        Theme = "Dark",
+        MinimizeKey = Enum.KeyCode.LeftControl
+    })
+    _G.FluentWindow = Window
 
--- Create the ScreenGui
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ShopScreenGui"
-screenGui.Parent = player:WaitForChild("PlayerGui") -- Ensure it's parented properly
-
--- Create the Main Frame
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0.4, 0, 0.6, 0)
-frame.Position = UDim2.new(0.3, 0, 0.2, 0)
-frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-frame.BackgroundTransparency = 0.2
-frame.Parent = screenGui
-
--- Create rounded corners for the frame
-local corner = Instance.new("UICorner")
-corner.Parent = frame
-
--- Create a Close Button
-local closeButton = Instance.new("TextButton")
-closeButton.Size = UDim2.new(0.1, 0, 0.05, 0)
-closeButton.Position = UDim2.new(0.85, 0, 0.05, 0)
-closeButton.Text = "Close"
-closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-closeButton.BackgroundColor3 = Color3.fromRGB(150, 0, 10)
-closeButton.BackgroundTransparency = 0.2 -- Adjusted to make it visible
-closeButton.Font = Enum.Font.SourceSansBold
-closeButton.TextSize = 14
-closeButton.Parent = frame
-
--- Connect the Close Button to destroy the GUI
-closeButton.MouseButton1Click:Connect(function()
-    screenGui:Destroy() -- This will destroy the GUI
-end)
-
--- Set up items
-local shopCategories = {  
-    ["Pets"] = {
-        -- IN STOCK BELOW
-        {name = "lvalentines_2025_love_bird", maxAmount = 10, stock = 15},
-        {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
-        {name = "cracked_egg", maxAmount = 10, stock = 15}, 
-        
-        --OUT OF STOCK BELOW
-        {name = "lunar_2025_gilded_snake", maxAmount = 10, stock = 0}}
-        {name = "lunar_2025_prism_snake", maxAmount = 10, stock = 0},
-        {name = "garden_2024_egg", maxAmount = 10, stock = 0},
-        {name = "moon_royal_egg", maxAmount = 10, stock = 0}, -- New moon royal egg
-
-
-
-
--- out of stock
--- {name = "garden_2024_egg", maxAmount = 10, stock = 0},
-
-    --IN STOCK
-
-
-        
-      --  {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
-      --  {name = "moon_royal_egg", maxAmount = 10, stock = 15}, -- New moon royal egg
-       -- {name = "cracked_egg", maxAmount = 10, stock = 15}, 
-    },
-    ["Food"] = {
-        {name = "tiny_pet_age_potion", maxAmount = 5, stock = 20},
-        {name = "deluxe_pet_age_potion", maxAmount = 5, stock = 10},
-    },
-    ["Toys"] = {
-        {name = "tiny_pet_toy", maxAmount = 5, stock = 15},
-        {name = "deluxe_pet_toy", maxAmount = 5, stock = 10},
+    -- Create Tabs
+    local Tabs = {
+        Main = Window:AddTab({ Title = "Main", Icon = "" }),
+        Settings = Window:AddTab({ Title = "Settings", Icon = "settings" }),
+        ValentinesTeleports = Window:AddTab({ Title = "Teleports", Icon = "map" }),
+        AdoptMeShop = Window:AddTab({ Title = "ADOPTMESHOP", Icon = "shopping-cart" }), -- New tab for AdoptMeShop
     }
-}
 
--- Create a Tab Panel for each category
-local tabPanel = Instance.new("Frame")
-tabPanel.Size = UDim2.new(1, 0, 1, 0)
-tabPanel.Position = UDim2.new(0, 0, 0.1, 0)
-tabPanel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-tabPanel.BackgroundTransparency = 0.2
-tabPanel.Parent = frame
+    -- Local Variables
+    local teleportSpeed = 1 -- Initial teleport speed (seconds between teleports)
+    local stopTeleportFlag = { Value = false } -- Table to hold the flag so it can be modified by reference
+    local shopUIVisible = false -- To track the visibility of the shop UI
+    local shopScreenGui -- Variable to hold the ScreenGui instance
 
--- Create tabs
-local tabs = {}
-local tabIndex = 1
-for category, items in pairs(shopCategories) do
-    local tab = Instance.new("TextButton")
-    tab.Size = UDim2.new(0.2, 0, 0.05, 0)
-    tab.Position = UDim2.new((tabIndex - 1) * 0.2, 0, 0, 0)
-    tab.Text = category
-    tab.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tab.BackgroundColor3 = Color3.fromRGB(150, 0, 10)
-    tab.Font = Enum.Font.SourceSansBold
-    tab.TextSize = 14
-    tab.Parent = tabPanel
+    -- Teleport Toggle
+    local ValentinesTeleportToggle = Tabs.ValentinesTeleports:AddToggle("ValentinesTeleportToggle", {
+        Title = "Teleport to Valentines Locations",
+        Default = false,
+        Description = "Teleports to various Valentine-themed locations."
+    })
 
-    -- Create content for each tab
-    local tabFrame = Instance.new("Frame")
-    tabFrame.Size = UDim2.new(1, 0, 0.8, 0)
-    tabFrame.Position = UDim2.new(0, 0, 0.1, 0)
-    tabFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    tabFrame.BackgroundTransparency = 1
-    tabFrame.Visible = tabIndex == 1
-    tabFrame.Parent = tabPanel
-
-    -- Create the items within each tab
-    local itemIndex = 1
-    for _, item in pairs(items) do
-        local itemFrame = Instance.new("Frame")
-        itemFrame.Size = UDim2.new(1, 0, 0.1, 0)
-        itemFrame.Position = UDim2.new(0, 0, (itemIndex - 1) * 0.1, 0)
-        itemFrame.BackgroundColor3 = Color3.fromRGB(230, 230, 230)
-        itemFrame.Parent = tabFrame
-
-        -- Create rounded corners for the frame
-        local itemCorner = Instance.new("UICorner")
-        itemCorner.Parent = itemFrame
-
-        -- Create a Label within the item frame
-        local label = Instance.new("TextLabel")
-        label.Size = UDim2.new(0.5, 0, 1, 0)
-        label.Position = UDim2.new(0, 0, 0, 0)
-        label.Text = item.name
-        label.TextColor3 = Color3.fromRGB(0, 0, 0)
-        label.Font = Enum.Font.SourceSansBold
-        label.TextSize = 20
-        label.Parent = itemFrame
-
-        -- Create a Frame for availability sign
-        local availableFrame = Instance.new("Frame")
-        availableFrame.Size = UDim2.new(0.2, 0, 1, 0)
-        availableFrame.Position = UDim2.new(0.80, 0, 0, 0) -- Right aligned
-        availableFrame.BackgroundTransparency = 1
-        availableFrame.Parent = itemFrame
-
-        -- Create a TextLabel for availability text
-        local availableSign = Instance.new("TextLabel")
-        availableSign.Size = UDim2.new(1, 0, 1, 0)
-        availableSign.TextColor3 = Color3.fromRGB(255, 0, 0) -- Red color for out of stock
-        availableSign.Font = Enum.Font.SourceSansBold
-        availableSign.TextSize = 18
-        availableSign.BackgroundTransparency = 1
-        availableSign.Parent = availableFrame
-
-        -- Update availability based on stock
-        if item.stock <= 0 then
-            availableSign.Text = "OUT OF STOCK"
+    ValentinesTeleportToggle:OnChanged(function(state)
+        if state then
+            stopTeleportFlag.Value = false
+            task.spawn(teleportToLocations, stopTeleportFlag)
         else
-            availableSign.Text = "AVAILABLE"
+            stopTeleportFlag.Value = true -- Signal to stop
         end
-
-        -- Create UI elements within the item frame
-        local textbox = Instance.new("TextBox")
-        textbox.Size = UDim2.new(0.15, 0, 1, 0)
-        textbox.Position = UDim2.new(0.5, 0, 0, 0)
-        textbox.PlaceholderText = "Amount (max " .. item.maxAmount .. ")"
-        textbox.TextColor3 = Color3.fromRGB(0, 0, 0)
-        textbox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-        textbox.Font = Enum.Font.SourceSans
-        textbox.TextSize = 18
-        textbox.ClearTextOnFocus = true
-        textbox.Parent = itemFrame
-
-        local buyButton = Instance.new("TextButton")
-        buyButton.Size = UDim2.new(0.15, 0, 1, 0)
-        buyButton.Position = UDim2.new(0.65, 0, 0, 0)
-        buyButton.Text = "Buy"
-        buyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        buyButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-        buyButton.Font = Enum.Font.SourceSansBold
-        buyButton.TextSize = 20
-        buyButton.Parent = itemFrame
-
-        local buttonCorner = Instance.new("UICorner")
-        buttonCorner.Parent = buyButton
-
-        -- Connect buy button to the purchase logic
-        buyButton.MouseButton1Click:Connect(function()
-            local buyCount = tonumber(textbox.Text) or 0
-            if buyCount > 0 and buyCount <= item.maxAmount and item.stock >= buyCount then
-                if item.name == "royal_egg" then
-                    -- Logic for purchasing the royal egg
-                    local args = {
-                        [1] = category:lower():gsub(" ", "_"),
-                        [2] = item.name,
-                        [3] = {
-                            ["buy_count"] = buyCount
-                        }
-                    }
-                    
-                    -- Call the purchase for the royal egg
-                    print("Attempting to buy " .. buyCount .. " of " .. item.name) -- Debug message
-                    game:GetService("ReplicatedStorage").API:FindFirstChild("ShopAPI/BuyItem"):InvokeServer(unpack(args))
-                    textbox.Text = ""
-                    item.stock = item.stock - buyCount -- Deduct the stock
-                    availableSign.Text = item.stock <= 0 and "OUT OF STOCK" or "AVAILABLE" -- Update availability
-
-                elseif item.name == "moon_royal_egg" then
-                    -- Logic for claiming the moon royal egg
-                    local args = {
-                        "MoonInterior"  -- This represents the argument to claim the moon royal egg
-                    }
-                    
-                    -- Fire the server with the MoonAPI to claim moon royal egg
-                    game:GetService("ReplicatedStorage").API:FindFirstChild("MoonAPI/ClaimRoyalEgg"):FireServer(unpack(args))
-                    print("Claimed the moon royal egg!") -- Debug message
-
-                    textbox.Text = "" -- Clear the textbox after claiming
-                    item.stock = item.stock - buyCount -- Deduct the stock
-                    availableSign.Text = item.stock <= 0 and "OUT OF STOCK" or "AVAILABLE" -- Update availability
-                end
-            else
-                print("Invalid amount! Please enter a valid number.") -- Debug message
-            end
-        end)
-
-        itemIndex = itemIndex + 1
-    end
-
-    tab.MouseButton1Click:Connect(function()
-        for _, tab in pairs(tabs) do
-            tab.Frame.Visible = false
-        end
-        tabFrame.Visible = true
     end)
 
-    tabs[tabIndex] = {Tab = tab, Frame = tabFrame}
-    tabIndex = tabIndex + 1
+    -- Teleport Speed Slider
+    Tabs.ValentinesTeleports:AddSlider("TeleportSpeedSlider", {
+        Title = "Teleport Speed",
+        Description = "Adjust the speed of the teleports (lower value = faster).",
+        Default = 1,
+        Min = 0.1,
+        Max = 5,
+        Rounding = 0.1,
+        Callback = function(value)
+            teleportSpeed = value
+        end
+    })
+
+    -- Add a toggle for handling the shop UI in the new tab
+    local shopToggle = Tabs.AdoptMeShop:AddToggle("AdoptMeShopToggle", {
+        Title = "Show Adopt Me Shop",
+        Default = false,
+        Description = "Toggles the visibility of the Adopt Me Shop UI."
+    })
+
+    shopToggle:OnChanged(function(state)
+        if state then
+            if not shopUIVisible then
+                shopUIVisible = true
+                createShopUI() -- Call to create and show the shop UI
+            end
+        else
+            if shopUIVisible then
+                shopUIVisible = false
+                hideShopUI() -- Call to hide or destroy the shop UI
+            end
+        end
+    end)
+
+    -- Function to create the shop UI
+    function createShopUI()
+        local player = game.Players.LocalPlayer
+
+        -- Create the ScreenGui only if it doesn't exist
+        if not shopScreenGui then
+            shopScreenGui = Instance.new("ScreenGui")
+            shopScreenGui.Name = "ShopScreenGui"
+            shopScreenGui.Parent = player:WaitForChild("PlayerGui")
+
+            -- Create the Main Frame
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(0.4, 0, 0.6, 0)
+            frame.Position = UDim2.new(0.3, 0, 0.2, 0)
+            frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            frame.BackgroundTransparency = 0.2
+            frame.Parent = shopScreenGui
+
+            -- Create rounded corners for the frame
+            local corner = Instance.new("UICorner")
+            corner.Parent = frame
+
+            -- Create a Close Button
+            local closeButton = Instance.new("TextButton")
+            closeButton.Size = UDim2.new(0.1, 0, 0.05, 0)
+            closeButton.Position = UDim2.new(0.85, 0, 0.05, 0)
+            closeButton.Text = "Close"
+            closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            closeButton.BackgroundColor3 = Color3.fromRGB(150, 0, 10)
+            closeButton.BackgroundTransparency = 0.2 
+            closeButton.Font = Enum.Font.SourceSansBold
+            closeButton.TextSize = 14
+            closeButton.Parent = frame
+
+            -- Connect the Close Button to hide the GUI
+            closeButton.MouseButton1Click:Connect(function()
+                hideShopUI() -- Call hide function instead of destroying it directly to maintain reference
+            end)
+
+            -- Set up items (Example structure)
+            local shopCategories = {  
+                ["Pets"] = {
+                    {name = "valentines_2025_love_bird", maxAmount = 10, stock = 15},
+                    {name = "royal_egg", maxAmount = 10, stock = 15},
+                },
+                ["Food"] = {
+                    {name = "tiny_pet_age_potion", maxAmount = 5, stock = 20},
+                    {name = "deluxe_pet_age_potion", maxAmount = 5, stock = 10},
+                },
+                ["Toys"] = {
+                    {name = "tiny_pet_toy", maxAmount = 5, stock = 15},
+                    {name = "deluxe_pet_toy", maxAmount = 5, stock = 10},
+                }
+            }
+
+            -- Continue with the rest of your shop UI creation code as necessary...
+            
+            -- Example of setting up tabs, items etc. goes here...
+            -- Make sure to add the functionality for tabs and items as needed 
+        else
+            -- If the UI already exists, simply show it
+            shopScreenGui.Enabled = true
+        end
+    end
+
+    -- Function to hide the shop UI
+    function hideShopUI()
+        if shopScreenGui then
+            shopScreenGui.Enabled = false -- Just hide the UI instead of destroying
+            shopUIVisible = false -- Update the visibility flag
+        end
+    end
+
+    -- Notify user
+    Fluent:Notify({
+        Title = "Fluent",
+        Content = "The script has been loaded.",
+        Duration = 8
+    })
+
+    SaveManager:LoadAutoloadConfig()
+    _G.FluentLoaded = true
 end
