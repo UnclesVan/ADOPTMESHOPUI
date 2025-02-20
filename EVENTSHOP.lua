@@ -37,9 +37,14 @@ closeButton.MouseButton1Click:Connect(function()
 end)
 
 -- Set up items
-local shopCategories = {
+local shopCategories = {  
     ["Pets"] = {
         {name = "lunar_2025_gilded_snake", maxAmount = 10, stock = 15},
+        {name = "lvalentines_2025_love_bird", maxAmount = 10, stock = 15},
+
+
+
+        
         {name = "lunar_2025_prism_snake", maxAmount = 10, stock = 15},
         {name = "garden_2024_egg", maxAmount = 10, stock = 0},
         {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
