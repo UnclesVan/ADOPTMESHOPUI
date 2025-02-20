@@ -39,17 +39,30 @@ end)
 -- Set up items
 local shopCategories = {  
     ["Pets"] = {
-        {name = "lunar_2025_gilded_snake", maxAmount = 10, stock = 15},
+        -- IN STOCK BELOW
         {name = "lvalentines_2025_love_bird", maxAmount = 10, stock = 15},
+        {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
+        {name = "cracked_egg", maxAmount = 10, stock = 15}, 
+        
+        --OUT OF STOCK BELOW
+        {name = "lunar_2025_gilded_snake", maxAmount = 10, stock = 0}}
+        {name = "lunar_2025_prism_snake", maxAmount = 10, stock = 0},
+        {name = "garden_2024_egg", maxAmount = 10, stock = 0},
+        {name = "moon_royal_egg", maxAmount = 10, stock = 0}, -- New moon royal egg
 
+
+
+
+-- out of stock
+-- {name = "garden_2024_egg", maxAmount = 10, stock = 0},
+
+    --IN STOCK
 
 
         
-        {name = "lunar_2025_prism_snake", maxAmount = 10, stock = 15},
-        {name = "garden_2024_egg", maxAmount = 10, stock = 0},
-        {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
-        {name = "moon_royal_egg", maxAmount = 10, stock = 15}, -- New moon royal egg
-        {name = "cracked_egg", maxAmount = 10, stock = 15}, 
+      --  {name = "royal_egg", maxAmount = 10, stock = 15}, -- Original royal egg
+      --  {name = "moon_royal_egg", maxAmount = 10, stock = 15}, -- New moon royal egg
+       -- {name = "cracked_egg", maxAmount = 10, stock = 15}, 
     },
     ["Food"] = {
         {name = "tiny_pet_age_potion", maxAmount = 5, stock = 20},
